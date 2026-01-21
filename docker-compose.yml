@@ -8,7 +8,7 @@ services:
       dockerfile: Dockerfile
     restart: always
     ports:
-      - 3000:3000
+      - 3501:3000
     env_file:
       - .env
     extra_hosts:
@@ -16,4 +16,4 @@ services:
     environment:
       # Overriding DATABASE_URL to access host's MySQL
       # Replace 'localhost' with 'host.docker.internal' in your .env or here
-      - DATABASE_URL=${DATABASE_URL_DOCKER:-mysql://root:password@host.docker.internal:3306/geoinmuebles}
+      - DATABASE_URL=${DATABASE_URL_DOCKER:-mysql://dockerUser:pa%24%24Inmobiliarias9@host.docker.internal:3306/geoinmuebles}
