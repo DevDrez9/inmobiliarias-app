@@ -14,7 +14,9 @@ const Map = dynamic(() => import('@/components/Map'), {
 
 import PropertyDetails from '@/components/PropertyDetails'
 
-export default function Home() {
+import { Suspense } from 'react'
+
+function HomeContent() {
   const { city, coords, setCity, loading: locLoading } = useUserLocation()
   const [properties, setProperties] = useState<any[]>([])
   const [loadingProp, setLoadingProp] = useState(false)
@@ -38,20 +40,6 @@ export default function Home() {
 
   useEffect(() => {
     if (initialPropertyId) {
-      // We need to fetch this specific property independent of city/type filters sometimes,
-      // OR just ensure it's in the list.
-      // For robustness, let's fetch it directly if we have an action for it, 
-      // OR just rely on getProperties if we know the city.
-      // BETTER: Create 'getPropertyById' action or use existing getProperties and filter.
-      // Let's assume we search in the current list or fetch it specifically.
-
-      // Since we don't have getPropertyById exposed yet in client, let's add it or specific fetch.
-      // Simplest MVP: filter from 'properties' if available, otherwise we might miss it if filtering is active.
-
-      // Let's create a quick fetcher or assume getProperties includes it? 
-      // No, getProperties filters by city. What if the shared link property is in another city?
-      // We should fetch it specifically.
-
       getPropertyById(initialPropertyId).then(prop => {
         if (prop) {
           setSelectedProperty(prop)
@@ -129,5 +117,13 @@ export default function Home() {
         />
       )}
     </div>
+  )
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<div className="flex h-screen items-center justify-center">Cargando...</div>}>
+      <HomeContent />
+    </Suspense>
   )
 }
