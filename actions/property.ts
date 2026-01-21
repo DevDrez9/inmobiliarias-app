@@ -124,21 +124,43 @@ export async function createProperty(formData: FormData) {
         }
     }
 
-    await prisma.property.create({
+    const property = await prisma.property.create({
         data: {
             title,
             description,
-            price,
-            currency,
-            listingType,
+            price: parseFloat(price),
+            currency: currency as any,
+            listingType: listingType as any,
             city,
-            latitude,
-            longitude,
+            latitude: parseFloat(latitude),
+            longitude: parseFloat(longitude),
             whatsapp,
             images: imageUrls,
             userId: session.user.id
         }
     })
+
+    // FACEBOOK INTEGRATION
+    const postToFacebook = formData.get("postToFacebook") === "true"
+    if (postToFacebook) {
+        console.log("Attempting to post to Facebook...")
+        // Import dynamically or ensure it's imported at top
+        const { postToFacebookPage } = await import('./facebook')
+
+        // Message: Title + City + Price + Link (optional)
+        const message = `${title} en ${city}\n\n${description.substring(0, 150)}...\n\nPrecio: ${price} ${currency}\nContactar: https://wa.me/${whatsapp}`
+
+        // Post first image
+        if (imageUrls.length > 0) {
+            const fbRes = await postToFacebookPage(session.user.id, message, imageUrls[0])
+            if (fbRes.success) {
+                console.log("Posted to Facebook successfully:", fbRes.postId)
+            } else {
+                console.error("Failed to post to Facebook:", fbRes.error)
+                // Optional: Throw warning? For now just log so we don't block the UI redirect.
+            }
+        }
+    }
 
     redirect("/")
 }
@@ -256,5 +278,17 @@ export async function getProperties(city: string, listingType?: string) {
     } catch (error) {
         console.error("Failed to fetch properties", error)
         return []
+    }
+}
+
+export async function getPropertyById(id: string) {
+    try {
+        const property = await prisma.property.findUnique({
+            where: { id }
+        })
+        return property
+    } catch (error) {
+        console.error(`Failed to fetch property ${id}`, error)
+        return null
     }
 }

@@ -1,8 +1,9 @@
 'use client'
 
 import { useUserLocation } from '@/hooks/useUserLocation'
-import { getProperties, getCurrentUser } from '@/actions/property'
+import { getProperties, getCurrentUser, getPropertyById } from '@/actions/property'
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { CITIES, CITY_COORDS } from '@/lib/constants'
 
@@ -27,6 +28,39 @@ export default function Home() {
       if (user) setCurrentUserId(user.id)
     })
   }, [])
+
+  /* 
+     Deep Linking Logic 
+     Check for 'id' in URL search params.
+  */
+  const searchParams = useSearchParams()
+  const initialPropertyId = searchParams.get('id')
+
+  useEffect(() => {
+    if (initialPropertyId) {
+      // We need to fetch this specific property independent of city/type filters sometimes,
+      // OR just ensure it's in the list.
+      // For robustness, let's fetch it directly if we have an action for it, 
+      // OR just rely on getProperties if we know the city.
+      // BETTER: Create 'getPropertyById' action or use existing getProperties and filter.
+      // Let's assume we search in the current list or fetch it specifically.
+
+      // Since we don't have getPropertyById exposed yet in client, let's add it or specific fetch.
+      // Simplest MVP: filter from 'properties' if available, otherwise we might miss it if filtering is active.
+
+      // Let's create a quick fetcher or assume getProperties includes it? 
+      // No, getProperties filters by city. What if the shared link property is in another city?
+      // We should fetch it specifically.
+
+      getPropertyById(initialPropertyId).then(prop => {
+        if (prop) {
+          setSelectedProperty(prop)
+          // Also update city to match property so map centers correctly
+          if (prop.city) setCity(prop.city)
+        }
+      })
+    }
+  }, [initialPropertyId])
 
   useEffect(() => {
     if (city) {

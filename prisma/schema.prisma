@@ -17,6 +17,11 @@ model User {
   maxProperties Int        @default(2)
   createdAt     DateTime   @default(now())
   properties    Property[]
+
+  // Facebook Integration
+  facebookAccessToken String?    @db.Text
+  facebookPageId      String?
+  facebookPageName    String?
 }
 
 enum Role {
