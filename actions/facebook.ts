@@ -46,7 +46,7 @@ export async function saveFacebookConnection(shortLivedToken: string, userId: st
                 facebookAccessToken: pageAccessToken,
                 facebookPageId: pageId,
                 facebookPageName: pageName
-            }
+            } as any // Temporary cast to bypass stale client types if necessary
         })
 
         return { success: true, pageName }

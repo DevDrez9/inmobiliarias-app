@@ -128,12 +128,12 @@ export async function createProperty(formData: FormData) {
         data: {
             title,
             description,
-            price: parseFloat(price),
+            price, // Already parsed
             currency: currency as any,
             listingType: listingType as any,
             city,
-            latitude: parseFloat(latitude),
-            longitude: parseFloat(longitude),
+            latitude, // Already parsed
+            longitude, // Already parsed
             whatsapp,
             images: imageUrls,
             userId: session.user.id
