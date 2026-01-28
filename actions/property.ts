@@ -64,8 +64,10 @@ export async function createProperty(formData: FormData) {
     if (files.length > 0) {
 
         // 1. Verify Environment
-        const apiKey = process.env.IMAGE_SERVICE_API_KEY
-        console.log("API Key:", apiKey)
+        // 1. Verify Environment
+        const encodedKey = process.env.IMAGE_SERVICE_API_KEY || '';
+        const apiKey = Buffer.from(encodedKey, 'base64').toString('utf-8');
+        console.log("Clave recuperada:", apiKey);
         if (!apiKey) {
             console.error("CRITICAL: IMAGE_SERVICE_API_KEY is missing in .env")
             throw new Error("Configuración del servidor incompleta (API Key missing).")
@@ -215,7 +217,8 @@ export async function updateProperty(id: string, formData: FormData) {
 
         // Reuse upload code block... (omitted for brevity in prompt, but necessary in real code)
         // For this context, I'll copy the upload logic part.
-        const apiKey = process.env.IMAGE_SERVICE_API_KEY
+        const encodedKey = process.env.IMAGE_SERVICE_API_KEY || '';
+        const apiKey = Buffer.from(encodedKey, 'base64').toString('utf-8');
         if (!apiKey) throw new Error("API Key missing")
 
         const uploadPromises = validFiles.map(async (file) => {
