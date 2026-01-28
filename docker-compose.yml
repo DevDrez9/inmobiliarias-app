@@ -17,3 +17,4 @@ services:
       # Overriding DATABASE_URL to access host's MySQL
       # Replace 'localhost' with 'host.docker.internal' in your .env or here
       - DATABASE_URL=${DATABASE_URL_DOCKER:-mysql://dockerUser:pa%24%24Inmobiliarias9@host.docker.internal:3306/geoinmuebles}
+      
