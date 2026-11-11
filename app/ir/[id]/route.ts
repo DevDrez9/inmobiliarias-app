@@ -7,7 +7,8 @@ function buildLauncherHtml(propertyId?: string) {
     'https://play.google.com/store/apps/details?id=com.ratelapps.alquilabo';
   const deepLinkPath = propertyId ? `inmueble/${propertyId}` : 'home';
   const customSchemeUrl = `${scheme}://${deepLinkPath}`;
-  const androidLauncherIntentUrl = `intent://#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=${androidPackage};S.browser_fallback_url=${encodeURIComponent(
+  // Intent URI con scheme obligatorio para Chrome/Android WebView + fallback automático a Play Store
+  const androidIntentUrl = `intent://${deepLinkPath}#Intent;scheme=${scheme};package=${androidPackage};S.browser_fallback_url=${encodeURIComponent(
     playStoreUrl,
   )};end`;
 
@@ -78,17 +79,19 @@ function buildLauncherHtml(propertyId?: string) {
     (function() {
       var ua = navigator.userAgent || '';
       var isAndroid = /android/i.test(ua);
-      var customScheme = ${JSON.stringify(customSchemeUrl)};
-      var launcherIntentUrl = ${JSON.stringify(androidLauncherIntentUrl)};
+      var intentUrl = ${JSON.stringify(androidIntentUrl)};
       var playStore = ${JSON.stringify(playStoreUrl)};
 
-      window.location.href = isAndroid ? launcherIntentUrl : customScheme;
-
-      setTimeout(function() {
-        if (!document.hidden) {
-          window.location.href = playStore;
-        }
-      }, 1800);
+      if (isAndroid) {
+        window.location.replace(intentUrl);
+        setTimeout(function() {
+          if (!document.hidden) {
+            window.location.replace(playStore);
+          }
+        }, 1200);
+      } else {
+        window.location.replace(playStore);
+      }
     })();
   </script>
 </head>
@@ -97,8 +100,8 @@ function buildLauncherHtml(propertyId?: string) {
     <img class="logo" src="/logo-alquilabo.jpg" alt="AlquilaBO" />
     <h1>Abriendo la app AlquilaBO...</h1>
     <p>Estamos abriendo este inmueble directamente en la aplicación móvil.</p>
-    <a class="btn btn-primary" href="${androidLauncherIntentUrl}">Abrir en la app AlquilaBO</a>
-    <a class="btn btn-secondary" href="${playStoreUrl}">Descargar en Google Play</a>
+    <a class="btn btn-primary" href="${androidIntentUrl}">Abrir en la app AlquilaBO</a>
+    <a class="btn btn-secondary" href="${playStoreUrl}">Ver en Google Play</a>
   </div>
 </body>
 </html>`;
